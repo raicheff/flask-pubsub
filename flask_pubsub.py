@@ -75,9 +75,10 @@ class PubSub(object):
         if request.args.get('token') != self.verification_token:
             abort(BAD_REQUEST)
 
-        envelope = json.loads(request.data.decode('utf-8'))
-        payload = base64.b64decode(envelope['message']['data'])
-        message = self.codec.loads(payload)
+        payload = json.loads(request.data.decode('utf-8'))
+        logger.debug('payload=%s', payload)
+
+        message = self.codec.loads(base64.b64decode(payload['message']['data']))
         logger.debug('message=%s', message)
 
         pubsub_message.send(self, message=message)
