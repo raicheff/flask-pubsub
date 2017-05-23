@@ -29,6 +29,9 @@ class PubSub(object):
     Documentation:
     https://flask-pubsub.readthedocs.io
 
+    Google Cloud Pub/Sub Documentation:
+    https://cloud.google.com/pubsub/docs
+
     :param app: Flask app to initialize with. Defaults to `None`
     """
 
