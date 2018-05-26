@@ -37,29 +37,23 @@ class PubSub(object):
 
     client = None
 
-    topic = None
+    redis = None
 
     verification_token = None
 
     codec = None
 
-    def __init__(self, app=None, blueprint=None, client=None, codec=None):
-        """"""
-
+    def __init__(self, app=None, blueprint=None, client=None, redis=None, codec=None):
         if app is not None:
-            self.init_app(app, blueprint, client, codec)
+            self.init_app(app, blueprint, client, redis, codec)
 
-    def init_app(self, app, blueprint=None, client=None, codec=None):
-        """"""
+    def init_app(self, app, blueprint=None, client=None, redis=None, codec=None):
 
         blueprint = blueprint or Blueprint('pubsub', __name__)
         blueprint.add_url_rule('/pubsub', 'pubsub', self.handle_push, methods=('POST',))
 
         self.client = client
-
-        self.topic = topic = app.config.get('PUBSUB_TOPIC')
-        if topic is None:
-            warnings.warn('PUBSUB_TOPIC not set', RuntimeWarning, stacklevel=2)
+        self.redis = redis
 
         self.verification_token = token = app.config.get('PUBSUB_VERIFICATION_TOKEN')
         if token is None:
@@ -67,13 +61,10 @@ class PubSub(object):
 
         self.codec = codec or json
 
-    def publish(self, message, **kwargs):
-        """"""
-
-        self.client.topic(self.topic).publish(self.codec.dumps(message), **kwargs)
+    def publish(self, topic, message, **kwargs):
+        self.client.topic(topic).publish(self.codec.dumps(message), **kwargs)
 
     def handle_push(self):
-        """"""
 
         if request.args.get('token') != self.verification_token:
             abort(BAD_REQUEST)
