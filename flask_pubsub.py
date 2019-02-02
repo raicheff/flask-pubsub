@@ -62,7 +62,7 @@ class PubSub(object):
         self.codec = codec or json
 
     def publish(self, topic, message, **kwargs):
-        self.client.topic(topic).publish(self.codec.dumps(message), **kwargs)
+        self.client.publish(topic, self.codec.dumps(message), **kwargs)
 
     def handle_push(self):
 
